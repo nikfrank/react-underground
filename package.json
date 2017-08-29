@@ -1,0 +1,24 @@
+{
+  "name": "react-underground",
+  "version": "1.0.0",
+  "description": "HOC for react modularization",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nikfrank/react-underground.git"
+  },
+  "keywords": [
+    "react",
+    "HOC",
+    "modularization"
+  ],
+  "author": "nik frank",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nikfrank/react-underground/issues"
+  },
+  "homepage": "https://github.com/nikfrank/react-underground#readme"
+}
