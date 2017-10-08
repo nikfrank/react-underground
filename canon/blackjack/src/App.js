@@ -3,7 +3,9 @@ import React, { Component } from 'react';
 class App extends Component {
   static get actions(){
     return {
-      
+      start: ()=>({
+        reducer: 'start'
+      }),
     };
   }
 
@@ -33,7 +35,7 @@ class App extends Component {
 
   static get initialState(){
     return {
-      blah: 'hmm',
+      blah: 'hmm...',
       cpHand: [],
       pHands: [[], [], []],
     };
@@ -46,7 +48,10 @@ class App extends Component {
           <h2>{this.props.state.blah}</h2>
         </div>
         <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
+          To get started, click
+          <button onClick={this.props.start}>
+            here
+          </button>
         </p>
       </div>
     );
