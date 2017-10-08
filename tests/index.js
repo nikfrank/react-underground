@@ -37,3 +37,25 @@ it('binds the action creators', ()=>{
 });
 
 
+it('triggers reducers from the action', ()=>{
+  const App = underground(Blackjack, Blackjack.initialState);
+  const app = mount(<App />);
+
+  expect( app.state() ).toEqual( Blackjack.initialState );
+  
+  const button = app.find('button').first();
+  button.simulate('click');
+
+  expect( app.state() ).toEqual(
+    Blackjack
+      .reducers['start'](
+        Blackjack.initialState,
+        Blackjack.actions['start']()
+      )
+  );
+});
+
+
+it('triggers a timeout hook', ()=>{
+  
+});

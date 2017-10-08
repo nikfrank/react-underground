@@ -15,13 +15,29 @@ export default (P, initialState)=> {
     constructor(props){
       super(props);
 
+      this.dispatch = (a)=>{
+        const { reducer, hook } = a;
+        
+        if ( reducer in P.reducers )
+          this.setState( prev => P.reducers[a.reducer]( prev, a ) );
+
+        if( hook in P.hooks ){
+          // run the network behaviour
+          // start with timeout hook
+          
+          
+          // then simple http?
+        }
+
+        /// return a promise? or use prop calls?
+      };
+
+      
       this.actionCreators = Object.keys(P.actions).reduce((p, c)=> ({
         ...p, [c]: (...args)=>{
           const action = P.actions[c](...args);
           props.onAction(action);
-
-          // here, dispatch to the local store
-          return action;
+          return this.dispatch( action );
         },
       }), {});
       

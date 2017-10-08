@@ -11,7 +11,9 @@ class App extends Component {
 
   static get reducers(){
     return {
-      
+      start: (state, action)=> ({
+        ...state, blah: 'rawr'
+      }),
     };
   }
 
