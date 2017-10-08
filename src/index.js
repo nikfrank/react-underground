@@ -49,9 +49,7 @@ export default (P, initialState)=> {
     
     render(){
       return (
-        <div className="blah">
-          <P state={this.state} {...this.actionCreators}/>
-        </div>
+        <P state={this.state} {...this.actionCreators}/>
       );
     }
   }
