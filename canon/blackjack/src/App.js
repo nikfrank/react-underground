@@ -6,6 +6,14 @@ class App extends Component {
       start: ()=>({
         reducer: 'start'
       }),
+
+      update: ()=>({
+        hook: 'wait',
+        payload: 2000,
+        then: {
+          reducer: 'update',
+        },
+      }),
     };
   }
 
@@ -13,6 +21,10 @@ class App extends Component {
     return {
       start: (state, action)=> ({
         ...state, blah: 'rawr'
+      }),
+
+      update: (state, action)=> ({
+        ...state, blah: 'really?',
       }),
     };
   }
@@ -53,6 +65,10 @@ class App extends Component {
           To get started, click
           <button onClick={this.props.start}>
             here
+          </button>
+          then
+          <button onClick={this.props.update}>
+            click here to wait
           </button>
         </p>
       </div>

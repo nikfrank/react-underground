@@ -26,7 +26,7 @@ it('binds the action creators', ()=>{
 
   const actionCreatorButtons = app.find('button');
 
-  expect(actionCreatorButtons.length).toEqual( 1 );
+  expect(actionCreatorButtons.length).toEqual( 2 );
 
   const button = actionCreatorButtons.first();
 
@@ -56,6 +56,50 @@ it('triggers reducers from the action', ()=>{
 });
 
 
-it('triggers a timeout hook', ()=>{
+it('triggers a timeout hook', (done)=>{
+  const App = underground(Blackjack, Blackjack.initialState);
+
+  let waitStarted, stateUpdated = false, waitWaited = false;
   
+  const onAction = (a)=>{
+    if( 'hook' in a )
+      waitStarted = (new Date()).getTime();
+
+    if( a.reducer === 'update'){
+      try{
+        expect( (new Date()).getTime() - waitStarted ).toBeGreaterThan( 1000 );
+      }catch(e){
+        return done(e);
+      }
+      waitWaited = true;
+
+      if( stateUpdated && waitWaited ) done();
+    }
+  };
+  
+  const app = mount(<App onAction={onAction}/>);
+
+  expect( app.state() ).toEqual( Blackjack.initialState );
+  
+  const button = app.find('button').at(1);
+  button.simulate('click');
+
+  expect( app.state() ).toEqual( Blackjack.initialState );
+
+  setTimeout(()=> {
+    try{
+      expect( app.state() ).toEqual(
+        Blackjack
+          .reducers['update'](
+            Blackjack.initialState,
+            Blackjack.actions['update']()
+          )
+      );
+    }catch(e){
+      return done(e);
+    }
+    
+    stateUpdate = true;
+    if( stateUpdated && waitWaited ) done();
+  }, 1100);
 });
