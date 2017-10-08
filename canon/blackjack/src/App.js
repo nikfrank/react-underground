@@ -7,9 +7,9 @@ class App extends Component {
         reducer: 'start'
       }),
 
-      update: ()=>({
+      update: ()=> ({
         hook: 'wait',
-        payload: 2000,
+        payload: 1000,
         then: {
           reducer: 'update',
         },
@@ -29,13 +29,14 @@ class App extends Component {
     };
   }
 
-  static get triggers(){
+  static get hooks(){
     return {
-      
+      wait: ({ payload: time })=> (new Promise(s=>
+        setTimeout(s, time) ) ),
     };
   }
 
-  static get hooks(){
+  static get triggers(){
     return {
       
     };

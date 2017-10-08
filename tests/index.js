@@ -61,10 +61,12 @@ it('triggers a timeout hook', (done)=>{
 
   let waitStarted, stateUpdated = false, waitWaited = false;
   
-  const onAction = (a)=>{
+  const onAction = a=>{
     if( 'hook' in a )
       waitStarted = (new Date()).getTime();
+  };
 
+  const onDispatch = a=> {
     if( a.reducer === 'update'){
       try{
         expect( (new Date()).getTime() - waitStarted ).toBeGreaterThan( 1000 );
@@ -77,7 +79,7 @@ it('triggers a timeout hook', (done)=>{
     }
   };
   
-  const app = mount(<App onAction={onAction}/>);
+  const app = mount(<App onAction={onAction} onDispatch={onDispatch}/>);
 
   expect( app.state() ).toEqual( Blackjack.initialState );
   
@@ -87,6 +89,8 @@ it('triggers a timeout hook', (done)=>{
   expect( app.state() ).toEqual( Blackjack.initialState );
 
   setTimeout(()=> {
+    app.update();
+    
     try{
       expect( app.state() ).toEqual(
         Blackjack
@@ -98,8 +102,8 @@ it('triggers a timeout hook', (done)=>{
     }catch(e){
       return done(e);
     }
-    
-    stateUpdate = true;
+
+    stateUpdated = true;
     if( stateUpdated && waitWaited ) done();
   }, 1100);
 });
