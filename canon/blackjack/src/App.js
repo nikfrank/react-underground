@@ -1,16 +1,5 @@
 import React, { Component } from 'react';
 
-import underground from '../../../src/';
-
-import logo from './logo.svg';
-import './App.css';
-
-const initialState = {
-  blah: 'hmm',
-  cpHand: [],
-  pHands: [[], [], []],
-};
-
 class App extends Component {
   static get actions(){
     return {
@@ -24,15 +13,29 @@ class App extends Component {
     };
   }
 
+  static get triggers(){
+    return {
+      
+    };
+  }
+
   static get hooks(){
     return {
       
     };
   }
-  
+
   static get decays(){
     return {
       
+    };
+  }
+
+  static get initialState(){
+    return {
+      blah: 'hmm',
+      cpHand: [],
+      pHands: [[], [], []],
     };
   }
   
@@ -40,7 +43,6 @@ class App extends Component {
     return (
       <div className="App">
         <div className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
           <h2>{this.props.state.blah}</h2>
         </div>
         <p className="App-intro">
@@ -51,5 +53,4 @@ class App extends Component {
   }
 }
 
-export default underground( App, initialState );
-export { initialState };
+export default App;
