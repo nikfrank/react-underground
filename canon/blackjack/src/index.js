@@ -5,7 +5,16 @@ import registerServiceWorker from './registerServiceWorker';
 
 import underground from 'react-underground';
 
-const AppG = underground( App, App.initialState );
+const AppG = underground( App );
 
-ReactDOM.render(<AppG />, document.getElementById('root'));
+const onDispatch = (...a)=> console.log('dis', ...a);
+const onAction = (...a)=> console.log('act', ...a);
+
+ReactDOM.render(
+  <AppG
+      initialState={App.initialState}
+      onDispatch={onDispatch}
+      onAction={onAction}/>,
+  document.getElementById('root')
+);
 registerServiceWorker();

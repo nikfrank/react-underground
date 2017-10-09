@@ -43,9 +43,7 @@ class App extends Component {
   }
 
   static get decays(){
-    return {
-      
-    };
+    return [];
   }
 
   static get initialState(){

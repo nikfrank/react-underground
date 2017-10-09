@@ -1,6 +1,6 @@
 {
   "name": "react-underground",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "HOC for react modularization",
   "scripts": {
     "test": "jest",

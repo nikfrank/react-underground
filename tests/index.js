@@ -9,20 +9,22 @@ import Blackjack from '../canon/blackjack/src/App';
 const { it, expect } = global;
 
 it('runs the app', ()=>{
-  const App = underground(Blackjack, Blackjack.initialState);
+  const App = underground(Blackjack);
   
-  const app = mount(<App />);
+  const app = mount(<App initialState={Blackjack.initialState}/>);
   
   expect( typeof app ).toEqual( 'object' );
 });
 
 
 it('binds the action creators', ()=>{
-  const App = underground(Blackjack, Blackjack.initialState);
+  const App = underground(Blackjack);
 
   const onAction = jest.fn();
   
-  const app = mount(<App onAction={onAction}/>);
+  const app = mount(<App
+                        initialState={Blackjack.initialState}
+                        onAction={onAction}/>);
 
   const actionCreatorButtons = app.find('button');
 
@@ -38,8 +40,8 @@ it('binds the action creators', ()=>{
 
 
 it('triggers reducers from the action', ()=>{
-  const App = underground(Blackjack, Blackjack.initialState);
-  const app = mount(<App />);
+  const App = underground(Blackjack);
+  const app = mount(<App initialState={Blackjack.initialState}/>);
 
   expect( app.state() ).toEqual( Blackjack.initialState );
   
@@ -57,7 +59,7 @@ it('triggers reducers from the action', ()=>{
 
 
 it('triggers a timeout hook', (done)=>{
-  const App = underground(Blackjack, Blackjack.initialState);
+  const App = underground(Blackjack);
 
   let waitStarted, stateUpdated = false, waitWaited = false;
   
@@ -79,7 +81,10 @@ it('triggers a timeout hook', (done)=>{
     }
   };
   
-  const app = mount(<App onAction={onAction} onDispatch={onDispatch}/>);
+  const app = mount(<App
+                        initialState={Blackjack.initialState}
+                        onAction={onAction}
+                        onDispatch={onDispatch}/>);
 
   expect( app.state() ).toEqual( Blackjack.initialState );
   
