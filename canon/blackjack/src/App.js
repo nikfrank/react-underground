@@ -16,8 +16,14 @@ class App extends Component {
         },
       }),
 
-      yell: text => ({
+      yell: ({ text = 'nu'})=> ({
         trigger: 'yell',
+        payload: text,
+      }),
+
+      
+      spell: ({ text = 'spell'})=> ({
+        trigger: 'spell',
         payload: text,
       }),
     };
@@ -37,14 +43,23 @@ class App extends Component {
 
   static get hooks(){
     return {
-      wait: ({ payload: time })=> (new Promise(s=>
-        setTimeout(s, time) ) ),
+      wait: ({ payload: time })=>
+        (new Promise(s=>
+          setTimeout(s, time) ) ),
     };
   }
 
   static get triggers(){
     return {
       yell: a=> ({ reducer: 'update', payload: a.payload.toUpperCase() }),
+      
+      spell: a=> a.payload.split('').map( (ch, chi) => ({
+        hook: 'wait',
+        payload: chi * 500,
+        then: {
+          reducer: 'update', payload: ch
+        },
+      }) ),
     };
   }
 
@@ -82,8 +97,12 @@ class App extends Component {
             click here to wait
           </button>
           or
-          <button onClick={()=> this.props.yell('what?')}>
+          <button onClick={this.props.yell}>
             yell?
+          </button>
+          or
+          <button onClick={this.props.spell}>
+            spell?
           </button>
         </p>
       </div>
