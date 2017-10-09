@@ -16,13 +16,13 @@ class App extends Component {
         },
       }),
 
-      yell: ({ text = 'nu'})=> ({
+      yell: ({ text = 'nu' })=> ({
         trigger: 'yell',
         payload: text,
       }),
 
       
-      spell: ({ text = 'spell'})=> ({
+      spell: ({ text = 'spell' })=> ({
         trigger: 'spell',
         payload: text,
       }),
@@ -57,7 +57,8 @@ class App extends Component {
         hook: 'wait',
         payload: chi * 500,
         then: {
-          reducer: 'update', payload: ch
+          reducer: 'update',
+          payload: ch,
         },
       }) ),
     };
@@ -69,7 +70,7 @@ class App extends Component {
         cause: state=> state.blah.indexOf('?') === -1,
         effect: state=> ({ reducer: 'update', payload: state.blah + '?' }),
         name: 'always question authority',
-      }
+      },
     ];
   }
 
