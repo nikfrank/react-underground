@@ -7,12 +7,18 @@ class App extends Component {
         reducer: 'start'
       }),
 
-      update: ()=> ({
+      updateWait: ()=> ({
         hook: 'wait',
         payload: 1000,
         then: {
           reducer: 'update',
+          payload: 'wait',
         },
+      }),
+
+      yell: text => ({
+        trigger: 'yell',
+        payload: text,
       }),
     };
   }
@@ -24,7 +30,7 @@ class App extends Component {
       }),
 
       update: (state, action)=> ({
-        ...state, blah: 'really?',
+        ...state, blah: action.payload,
       }),
     };
   }
@@ -38,12 +44,18 @@ class App extends Component {
 
   static get triggers(){
     return {
-      
+      yell: a=> ({ reducer: 'update', payload: a.payload.toUpperCase() }),
     };
   }
 
   static get decays(){
-    return [];
+    return [
+      {
+        cause: state=> state.blah.indexOf('?') === -1,
+        effect: state=> ({ reducer: 'update', payload: state.blah + '?' }),
+        name: 'always question authority',
+      }
+    ];
   }
 
   static get initialState(){
@@ -66,8 +78,12 @@ class App extends Component {
             here
           </button>
           then
-          <button onClick={this.props.update}>
+          <button onClick={this.props.updateWait}>
             click here to wait
+          </button>
+          or
+          <button onClick={()=> this.props.yell('what?')}>
+            yell?
           </button>
         </p>
       </div>

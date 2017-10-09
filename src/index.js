@@ -24,106 +24,108 @@ const downstreamStamp = (a)=>({
 });
 
 
-export default P=>
-  class nuP extends Component {
+export default P=> class nuP extends Component {
 
-    static get defaultProps(){
-      return {
-        onAction: ()=>0,
-        onDispatch: ()=>0,
-        onTrigger: ()=>0,
-        onDecays: ()=>0,
-        onHook: ()=>0,
-      };
-    }
-    
-
-    dispatch = (a)=>{
-      this.props.onDispatch(a);
-      
-      const {
-        reducer,
-        hook,
-        trigger,
-      } = a;
-
-
-      
-      if ( reducer in P.reducers )
-        this.setState(
-          state => P.reducers[a.reducer]( state, a ),
-          
-          ()=> {
-            const causedDecays = P.decays
-              .filter( decay => decay.cause(this.state) )
-
-            const effects = causedDecays
-              .map( decay => ({
-                ...decay.effect( nextState ),
-                ...sourceStamp(),
-                sourceDecay: decay.name,
-              }) )
-
-            this.props.onDecays( a, this.state, causedDecays, effects );
-            effects.forEach( this.dispatch );
-          }
-        );
-
-
-      if( hook in P.hooks ){
-        this.props.onHook(
-          a,
-          P.hooks[hook](a)
-           .then( payload=>
-             this.dispatch({
-               ...a.then,
-               payload,
-               timestamp: (new Date()).getTime(),
-               ...downstreamStamp(a),
-             }) )
-        );
-      }
-
-
-      
-      if( trigger in P.triggers ) {
-        const triggeredActions =
-          P.triggers[ trigger ]( a )
-           .map( triggeredA => ({
-             ...triggeredA,
-             ...downstreamStamp(a),
-           }) );
-        
-        this.props.onTrigger( a, triggeredActions );
-        triggeredActions.forEach( this.dispatch );
-      }
-      
-      // should anything (promise?) be returned from dispatch?
-      // whatever it is, is resolved from onHook.args[1]
+  static get defaultProps(){
+    return {
+      onAction: (A)=>0,
+      onDispatch: (A)=>0,
+      onTrigger: (A, Ts)=>0,
+      onDecays: (A, state, causes, effects)=>0,
+      onHook: (A, hookPromise)=>0,
     };
+  }
+  
 
-    constructor( props ){
-      super( props );
-
-      this.state = props.initialState;
-      
-      this.actionCreators = Object.keys(P.actions).reduce((p, c)=> ({
-        ...p, [c]: (...args)=>{
-          
-          const action = {
-            ...P.actions[c](...args),
-            ...sourceStamp(),
-          };
-          
-          this.props.onAction( action );
-          return this.dispatch( action );
-        },
-      }), {});
-    }
+  dispatch = (a)=>{
+    this.props.onDispatch(a);
     
-    render(){
-      return (
-        <P state={this.state} {...this.actionCreators}/>
+    const {
+      reducer,
+      hook,
+      trigger,
+    } = a;
+
+
+    
+    if ( reducer in P.reducers )
+      this.setState(
+        state => P.reducers[a.reducer]( state, a ),
+        
+        ()=> {
+          const causedDecays =
+            P.decays.filter( decay => decay.cause(this.state) )
+          
+          const effects = causedDecays
+            .map( decay => ({
+              ...decay.effect( this.state ),
+              ...sourceStamp(),
+              sourceDecay: decay.name,
+            }) )
+
+          if ( effects.length )
+            this.props.onDecays( a, this.state, causedDecays, effects );
+          
+          effects.forEach( this.dispatch );
+        }
+      );
+
+
+    if( hook in P.hooks ){
+      this.props.onHook(
+        a,
+        P.hooks[hook](a)
+         .then( payload=>
+           this.dispatch({
+             ...a.then,
+             payload: payload || a.then.payload,
+             timestamp: (new Date()).getTime(),
+             ...downstreamStamp(a),
+           }) )
       );
     }
+
+
+    
+    if( trigger in P.triggers ) {
+      const triggeredActions =
+        [].concat(
+          P.triggers[ trigger ]( a )
+        ).map( triggeredA => ({
+          ...triggeredA,
+          ...downstreamStamp(a),
+        }) );
+      
+      this.props.onTrigger( a, triggeredActions );
+      triggeredActions.forEach( this.dispatch );
+    }
+    
+    // should anything (promise?) be returned from dispatch?
+    // whatever it is, is resolved from onHook.args[1]
   };
+
+  constructor( props ){
+    super( props );
+
+    this.state = props.initialState;
+    
+    this.actionCreators = Object.keys(P.actions).reduce((p, c)=> ({
+      ...p, [c]: (...args)=>{
+        
+        const action = {
+          ...P.actions[c](...args),
+          ...sourceStamp(),
+        };
+        
+        this.props.onAction( action );
+        return this.dispatch( action );
+      },
+    }), {});
+  }
+  
+  render(){
+    return (
+      <P state={this.state} {...this.actionCreators}/>
+    );
+  }
+};
