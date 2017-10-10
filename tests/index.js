@@ -4,26 +4,26 @@ import React from 'react';
 
 import { mount } from 'enzyme';
 
-import Blackjack from '../canon/blackjack/src/App';
+import Testapp from '../canon/testapp/src/App';
 
 const { it, expect } = global;
 
 it('runs the app', ()=>{
-  const App = underground(Blackjack);
+  const App = underground(Testapp);
   
-  const app = mount(<App initialState={Blackjack.initialState}/>);
+  const app = mount(<App initialState={Testapp.initialState}/>);
   
   expect( typeof app ).toEqual( 'object' );
 });
 
 
 it('binds the action creators', ()=>{
-  const App = underground(Blackjack);
+  const App = underground(Testapp);
 
   const onAction = jest.fn();
   
   const app = mount(<App
-                        initialState={Blackjack.initialState}
+                        initialState={Testapp.initialState}
                         onAction={onAction}/>);
 
   const actionCreatorButtons = app.find('button');
@@ -40,26 +40,26 @@ it('binds the action creators', ()=>{
 
 
 it('triggers reducers from the action', ()=>{
-  const App = underground(Blackjack);
-  const app = mount(<App initialState={Blackjack.initialState}/>);
+  const App = underground(Testapp);
+  const app = mount(<App initialState={Testapp.initialState}/>);
 
-  expect( app.state() ).toEqual( Blackjack.initialState );
+  expect( app.state() ).toEqual( Testapp.initialState );
   
   const button = app.find('button').first();
   button.simulate('click');
 
   expect( app.state() ).toEqual(
-    Blackjack
+    Testapp
       .reducers['start'](
-        Blackjack.initialState,
-        Blackjack.actions['start']()
+        Testapp.initialState,
+        Testapp.actions['start']()
       )
   );
 });
 
 
 it('triggers a timeout hook', (done)=>{
-  const App = underground(Blackjack);
+  const App = underground(Testapp);
 
   let waitStarted, stateUpdated = false, waitWaited = false;
   
@@ -71,7 +71,7 @@ it('triggers a timeout hook', (done)=>{
   const onDispatch = a=> {
     if( a.reducer === 'update'){
       try{
-        expect( (new Date()).getTime() - waitStarted ).toBeGreaterThan( 1000 );
+        expect( (new Date()).getTime() - waitStarted ).toBeGreaterThan( 999 );
       }catch(e){
         return done(e);
       }
@@ -82,26 +82,26 @@ it('triggers a timeout hook', (done)=>{
   };
   
   const app = mount(<App
-                        initialState={Blackjack.initialState}
+                        initialState={Testapp.initialState}
                         onAction={onAction}
                         onDispatch={onDispatch}/>);
 
-  expect( app.state() ).toEqual( Blackjack.initialState );
+  expect( app.state() ).toEqual( Testapp.initialState );
   
   const button = app.find('button').at(1);
   button.simulate('click');
 
-  expect( app.state() ).toEqual( Blackjack.initialState );
+  expect( app.state() ).toEqual( Testapp.initialState );
 
   setTimeout(()=> {
     app.update();
     
     try{
       expect( app.state() ).toEqual(
-        Blackjack
+        Testapp
           .reducers['update'](
-            Blackjack.initialState,
-            Blackjack.actions['update']()
+            Testapp.initialState,
+            Testapp.actions['update']()
           )
       );
     }catch(e){
