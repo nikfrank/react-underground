@@ -152,3 +152,23 @@ export default P=> class nuP extends Component {
     );
   }
 };
+
+
+export const UgLogger = ({
+  onDispatch = (...a)=> console.log('D', ...a),
+  onAction = (...a)=> console.log('A', ...a),
+  onTrigger = (...a)=> console.log('T', ...a),
+  onDecays = (...a)=> console.log('Y', ...a),
+  onHook = (...a)=> console.log('H', ...a),
+  Component,
+  ...props,
+}) => (
+  <Component
+    onDispatch={onDispatch}
+    onAction={onAction}
+    onTrigger={onTrigger}
+    onDecays={onDecays}
+    onHook={onHook}
+    {...props}
+  />
+);
