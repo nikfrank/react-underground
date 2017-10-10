@@ -53,6 +53,29 @@ export default P=> class nuP extends Component {
         state => P.reducers[a.reducer]( state, a ),
         
         ()=> {
+          // atomic decay should be available
+          // for sync reducer/trigger effects:
+          
+          // calc effects from set state
+          // if effects.length
+          // do
+          //   calc provisional next state after first effect reducer(s)
+          //      // reducers are pure!
+          //      // treat trigger [d] as an atom? or decay at each step?
+          //   dispatch rest of action if any
+          //      // this can trigger hooks
+          //      // it is assumed that this decay will finish before hook
+          //      // based on decay chain being sync, hook being async
+          //   calc next effects
+          //      // can loop inf if effect never unsets cause
+          //      // could skip repeats, but may *want* to retrigger decay!
+          //      // and anyhow, could push-me-pull-you around it
+          //      // so dev is responsible for halting atomic decay.
+          // while ( effects.length )
+          // decays are done, setState to decay chain output
+
+          // it suffices for now to say dev must enforce atomicity
+          
           const causedDecays =
             P.decays.filter( decay => decay.cause(this.state) )
           
