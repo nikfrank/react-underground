@@ -4,7 +4,8 @@
   "description": "HOC for react modularization",
   "scripts": {
     "test": "jest",
-    "build": "babel -d dist/ src/"
+    "build": "babel -d dist/ src/",
+    "postclone": "yarn  &&  yarn run build  &&  yark link  &&  cd canon/testapp  &&  yarn  && yarn link react-underground"
   },
   "repository": {
     "type": "git",
