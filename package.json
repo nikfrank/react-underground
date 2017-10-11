@@ -5,7 +5,7 @@
   "scripts": {
     "test": "jest",
     "build": "babel -d dist/ src/",
-    "postclone": "yarn  &&  yarn run build  &&  yark link  &&  cd canon/testapp  &&  yarn  && yarn link react-underground"
+    "postclone": "yarn  &&  yarn run build  &&  yarn link  &&  cd canon/testapp  &&  yarn  && yarn link react-underground"
   },
   "repository": {
     "type": "git",
