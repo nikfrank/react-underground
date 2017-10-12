@@ -130,7 +130,7 @@ export default P=> class nuP extends Component {
     super( props );
 
     this.state = props.initialState;
-    
+
     this.actionCreators = Object.keys(P.actions).reduce((p, c)=> ({
       ...p, [c]: (...args)=>{
         
@@ -222,8 +222,8 @@ export const UgLogger = ({
 // context should be an object as such:
 
 ({
-  pending,
-  outstanding,
+  pending: [],
+  outstanding: [],
 });
 
 // each of which is

@@ -42,31 +42,39 @@ class App extends Component {
   }
 
   static get initialState(){
+    console.log('re is');
     return {
-      cpHand: [],
-      pHands: [[], [], []],
+      cpHand: [ { rank: 1, suit: 0} ],
+      pHands: [
+        [ { rank: 8, suit: 1 }, { rank: 11, suit: 2 } ],
+        [ { rank: 8, suit: 3 } ],
+      ],
     };
   }
 
 
   render() {
+    const { cpHand, pHands } = this.props.state;
+    
     return (
       <div className="App">
         <header className="App-header">
-          <h1 className="App-title">Welcome to React</h1>
+          <h1 className="App-title">Black Jack Game</h1>
         </header>
-        <Hand cards={ [{ rank: 1 }, { rank: 2 }, { rank: 3 }] }
-              hidden={true}
-              onClick={this.props.selectCard}
-              style={defHandStyle}/>
-        <Hand cards={ [
-          { rank: 1, suit: 0 },
-          { rank: 10, suit: 1 },
-          { rank: 13, suit: 2 },
-          { rank: 3, suit: 3 },
-        ] }
-              onClick={this.props.selectCard}
-              style={defHandStyle}/>
+        
+        <Hand
+          cards={
+            cpHand.length !== 1 ? cpHand: cpHand.concat([{}, { rank: 1, hidden: true }])
+          }
+          onClick={this.props.selectCard}
+          style={defHandStyle}/>
+        
+        
+        { pHands.map( hand => (
+          <Hand cards={ hand }
+                onClick={this.props.selectCard}
+                style={defHandStyle}/>
+        ) ) }
         
         <p className="App-intro">
           To get started, edit <code>src/App.js</code> and save to reload.

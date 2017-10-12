@@ -5132,12 +5132,6 @@ rc@^1.0.1, rc@^1.1.6, rc@^1.1.7:
     minimist "^1.2.0"
     strip-json-comments "~2.0.1"
 
-react-deck-o-cards@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/react-deck-o-cards/-/react-deck-o-cards-1.0.0.tgz#7a18879d341e6064ae450507403aa5d09e42804b"
-  dependencies:
-    react "^16.0.0"
-
 react-dev-utils@^4.1.0:
   version "4.1.0"
   resolved "https://registry.yarnpkg.com/react-dev-utils/-/react-dev-utils-4.1.0.tgz#f6f436febd3f4eeb538490319b51c875c1e35bc5"
