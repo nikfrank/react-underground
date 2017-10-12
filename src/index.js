@@ -46,7 +46,6 @@ export default P=> class nuP extends Component {
       trigger,
     } = a;
 
-
     
     if ( reducer in P.reducers )
       this.setState(
@@ -172,3 +171,63 @@ export const UgLogger = ({
     {...props}
   />
 );
+
+
+
+
+
+
+// the setState should only be called after the state invariants pass
+
+// loop every 20 ms
+// collect pending actions
+// calculate their sync effect
+// save version of state,
+// is state valid? (by invariants)
+//   publish to setState
+
+// all decays need to be calculated recursively as discussed in previous commentary
+
+
+
+
+//////////
+// Context
+
+
+/// furthermore, outstanding actions (hooks) should leave their next action on the state, not in their enclosures
+
+// this would allow the callback actions to be updated as part of the reducer loop
+// and is simply an honest way to deal withe fact that there are really two states (inbound, outbound)
+
+// this constitutes an update to the api of a reducer from
+((state, action) => ({ ...state, /* action effects */}))();
+
+// to
+((state, context, action) => ({ state, context }))();
+
+
+// also decays should be possible for context just the same also:
+
+({
+  cause: (state, context)=> Boolean,
+  effect: (state, context)=> `{A}`
+});
+
+// and invariants in general
+
+((state, context) => Boolean)();
+
+
+// context should be an object as such:
+
+({
+  pending,
+  outstanding,
+});
+
+// each of which is
+[
+  `{A}`
+]
+
