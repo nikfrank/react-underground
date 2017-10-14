@@ -28,7 +28,7 @@ it('binds the action creators', ()=>{
 
   const actionCreatorButtons = app.find('button');
 
-  expect(actionCreatorButtons.length).toEqual( 2 );
+  expect(actionCreatorButtons.length).toEqual( 4 );
 
   const button = actionCreatorButtons.first();
 

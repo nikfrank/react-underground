@@ -32,7 +32,7 @@ class App extends Component {
   static get reducers(){
     return {
       start: (state, action)=> ({
-        ...state, blah: 'rawr'
+        ...state, blah: 'rawr?'
       }),
 
       update: (state, action)=> ({
@@ -81,7 +81,7 @@ class App extends Component {
       pHands: [[], [], []],
     };
   }
-  
+
   render() {
     return (
       <div className="App">

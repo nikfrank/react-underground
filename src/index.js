@@ -46,12 +46,11 @@ export default P=> class nuP extends Component {
       trigger,
     } = a;
 
-    
     if ( reducer in P.reducers )
       this.setState(
         state => P.reducers[a.reducer]( state, a ),
         
-        ()=> {
+        (()=> {
           // atomic decay should be available
           // for sync reducer/trigger effects:
           
@@ -76,12 +75,12 @@ export default P=> class nuP extends Component {
           // it suffices for now to say dev must enforce atomicity
           
           const causedDecays =
-            P.decays.filter( decay => decay.cause(this.state) )
-          
+            P.decays.filter( decay => decay.cause(this.state) );
+
           const effects = causedDecays
             .map( decay => ({
               ...decay.effect( this.state ),
-              ...sourceStamp(),
+              ...downstreamStamp(a),
               sourceDecay: decay.name,
             }) )
 
@@ -89,7 +88,7 @@ export default P=> class nuP extends Component {
             this.props.onDecays( a, this.state, causedDecays, effects );
           
           effects.forEach( this.dispatch );
-        }
+        })
       );
 
 
@@ -139,11 +138,13 @@ export default P=> class nuP extends Component {
           ...sourceStamp(),
         };
         
-        this.props.onAction( action );
+        this.props.onAction( action, c );
         return this.dispatch( action );
       },
     }), {});
   }
+  
+
   
   render(){
     return (
@@ -205,6 +206,10 @@ export const UgLogger = ({
 
 // to
 ((state, context, action) => ({ state, context }))();
+
+
+// anything changing anything in context needs to leave his ids for diagramming
+// this can be implemented here (if contextChanged)=> tag changed context by ids
 
 
 // also decays should be possible for context just the same also:
