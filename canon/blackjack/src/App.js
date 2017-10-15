@@ -64,17 +64,15 @@ class App extends Component {
       dealCard: (state, { payload: card, hand: hiDealing })=>
         state.pHands[hiDealing].phase !== 'deal' ? state : ({
           ...state, pHands: state.pHands.map( (hand, hi)=>
-            hi !== hiDealing ? hand : (
-              ['stand', 'bust'].indexOf(hand.phase) > -1 ? hand : ({
-                ...hand, cards: hand.cards.concat( card )
-              })
-            )
+            hi !== hiDealing ? hand : ({
+              ...hand, cards: hand.cards.concat( card )
+            })
           )
         }),
 
       dealCpCard: (state, { payload: card })=> ({
         ...state,
-        cpHand: state.cpHand.concat(card)
+        cpCards: state.cpCards.concat(card)
       }),
         
     };
@@ -83,8 +81,8 @@ class App extends Component {
 
   static get triggers(){
     return {
-      cpPlay: ({ payload: cpHand })=>
-        !doesDealerHit(cpHand) ? [] : [{
+      cpPlay: ({ payload: cpCards })=>
+        !doesDealerHit(cpCards) ? [] : [{
           hook: 'dealCard',
           then: { reducer: 'dealCpCard' }
         }],
@@ -131,7 +129,8 @@ class App extends Component {
           payload: {
             phase: 'bust',
             handIndex: state
-              .pHands.findIndex( hand => (handTotal(hand.cards) > 21) &&
+              .pHands.findIndex( hand =>
+                (handTotal(hand.cards) > 21) &&
                                        ( hand.phase !== 'bust' ) ),
           },
         }),
@@ -141,9 +140,9 @@ class App extends Component {
       {
         cause: state=> !state.pHands.filter( ({ phase })=>
           ['stand', 'bust'].indexOf(phase) === -1
-        ).length && doesDealerHit(state.cpHand),
+        ).length && doesDealerHit(state.cpCards),
 
-        effect: state=> ({ trigger: 'cpPlay', payload: state.cpHand }),
+        effect: state=> ({ trigger: 'cpPlay', payload: state.cpCards }),
         name: 'dealer starts playing',
       },
     ];
@@ -151,7 +150,7 @@ class App extends Component {
 
   static get initialState(){
     return {
-      cpHand: [ ],
+      cpCards: [ ],
       pHands: [
         {
           cards: [],
@@ -166,20 +165,23 @@ class App extends Component {
   }
 
   render() {
-    const { cpHand, pHands } = this.props.state;
+    const { cpCards, pHands } = this.props.state;
 
-    const { hit, doubleDown, split, stand } = this.props;
-    
+    const { newHand, hit, doubleDown, split, stand } = this.props;
+
     return (
       <div className="App">
         <header className="App-header">
-          <h1 className="App-title">Black Jack Game</h1>
+          <h1 className="App-title">
+            Black Jack Game!
+            <button onClick={newHand}>new</button>
+          </h1>
         </header>
         
         <Hand
             cards={
-              cpHand.length !== 1 ? cpHand:
-                   cpHand.concat([{ rank: 1, hidden: true }])
+              cpCards.length !== 1 ? cpCards:
+                   cpCards.concat([{ rank: 1, hidden: true }])
                   }
             cardWidth={90}
             cardOffset={95}
