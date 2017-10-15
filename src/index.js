@@ -154,24 +154,57 @@ export default P=> class nuP extends Component {
 };
 
 
-export const UgLogger = ({
-  onDispatch = (...a)=> console.log('D', ...a),
-  onAction = (...a)=> console.log('A', ...a),
-  onTrigger = (...a)=> console.log('T', ...a),
-  onDecays = (...a)=> console.log('Y', ...a),
-  onHook = (...a)=> console.log('H', ...a),
-  Component,
-  ...props,
-}) => (
-  <Component
-    onDispatch={onDispatch}
-    onAction={onAction}
-    onTrigger={onTrigger}
-    onDecays={onDecays}
-    onHook={onHook}
-    {...props}
-  />
-);
+export class UgLogger extends Component {
+
+  state = { open: false };
+  
+  render(){
+    const {
+      onDispatch = (...a)=> console.log('D', ...a),
+      onAction = (...a)=> console.log('A', ...a),
+      onTrigger = (...a)=> console.log('T', ...a),
+      onDecays = (...a)=> console.log('Y', ...a),
+      onHook = (...a)=> console.log('H', ...a),
+      Component,
+      ...props,
+    } = this.props;
+
+    return (
+      <div>
+        <Component
+            onDispatch={onDispatch}
+            onAction={onAction}
+            onTrigger={onTrigger}
+            onDecays={onDecays}
+            onHook={onHook}
+            {...props}
+        />
+        
+        <div style={{
+          position: 'fixed', top: 5, right: 5,
+          backgroundColor: 'black', color: 'white',
+          height: 17, width: 17, borderRadius: '50%',
+          textAlign: 'center', zIndex: 10,
+        }} onClick={()=> this.setState(state => ({ open: !state.open }) )}>
+          { this.state.open ? 'X' : 'O' }
+        </div>
+
+        {
+          !this.state.open ? null : (
+            <div style={{
+              position: 'fixed', top: 0, right: 0,
+              height: '100vh', width: '18vw',
+              borderLeft: '1px solid black',
+              zIndex: 5,
+            }}>
+              latest
+            </div>
+          )
+        }
+      </div>
+    );
+  }
+};
 
 
 
