@@ -2109,7 +2109,7 @@ enzyme-adapter-react-16@^1.0.2:
     prop-types "^15.5.10"
     react-test-renderer "^16.0.0-0"
 
-enzyme-adapter-utils@^1.0.0:
+enzyme-adapter-utils@^1.0.0, enzyme-adapter-utils@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/enzyme-adapter-utils/-/enzyme-adapter-utils-1.0.1.tgz#fcd81223339a55a312f7552641e045c404084009"
   dependencies:

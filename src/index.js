@@ -38,7 +38,10 @@ export default P=> class nuP extends Component {
   
 
   dispatch = (a)=>{
-    this.props.onDispatch(a);
+    this.props.onDispatch({
+      ...a,
+      timestamp: (new Date()).getTime(),
+    });
     
     const {
       reducer,
@@ -154,13 +157,58 @@ export default P=> class nuP extends Component {
 };
 
 
+// uglogger
+const typedActions = (A, {
+  hook, trigger, reducer
+} = A) => [
+  hook ? { ...A, type: 'hook'} : undefined,
+  trigger ? { ...A, type: 'trigger'} : undefined,
+  reducer ? { ...A, type: 'reducer'} : undefined,
+].filter(i=>i);
+
+const timedAction = (sources = [], A) => ({
+  ...A,
+  timediff: !sources.length ? 0 : A.timestamp - sources[0].timestamp,
+  spacediff: !sources.length ? 0 : (
+    A.timestamp - sources[sources.length-1].timestamp > 25
+  ) ? 0 : 5,
+});
+
+const CAfills = {
+  hook: 'red',
+  trigger: 'blue',
+  reducer: 'green',
+};
+
+const CAstrokes = {
+  hook: 'orange',
+  trigger: 'cyan',
+  reducer: 'yellow',
+};
+
 export class UgLogger extends Component {
 
-  state = { open: false };
+  state = {
+    open: false,
+    actions: {},
+    currentAction: '',
+  };
+  
+  onDispatch = A=> this.setState(state => ({
+    ...state, actions: {
+      ...state.actions,
+      [A.source]: (state.actions[A.source] || [])
+        .concat( typedActions( timedAction(state.actions[A.source], A) ) )
+        .sort((a, b)=>  a.timestamp - b.timestamp),
+    },
+  }) );
+
+  setCurrentAction = (actionId)=>{
+    this.setState({ currentAction: actionId });
+  }
   
   render(){
     const {
-      onDispatch = (...a)=> console.log('D', ...a),
       onAction = (...a)=> console.log('A', ...a),
       onTrigger = (...a)=> console.log('T', ...a),
       onDecays = (...a)=> console.log('Y', ...a),
@@ -169,15 +217,18 @@ export class UgLogger extends Component {
       ...props,
     } = this.props;
 
+    const currentAction = this.state.currentAction;
+    const cActions = this.state.actions[currentAction] || [];
+    
     return (
       <div>
         <Component
-            onDispatch={onDispatch}
-            onAction={onAction}
-            onTrigger={onTrigger}
-            onDecays={onDecays}
-            onHook={onHook}
-            {...props}
+          onDispatch={this.onDispatch}
+          onAction={onAction}
+          onTrigger={onTrigger}
+          onDecays={onDecays}
+          onHook={onHook}
+          {...props}
         />
         
         <div style={{
@@ -195,9 +246,35 @@ export class UgLogger extends Component {
               position: 'fixed', top: 0, right: 0,
               height: '100vh', width: '18vw',
               borderLeft: '1px solid black',
+              backgroundColor: 'white',
               zIndex: 5,
             }}>
-              latest
+              <div>
+                {
+                  Object.keys(this.state.actions).map( actionId => (
+                    <div key={actionId} onClick={()=> this.setCurrentAction(actionId)}>
+                      {actionId} - 
+                      {this.state.actions[actionId].length}
+                    </div>
+                  ) )
+                }
+              </div>
+
+              {
+                !this.state.currentAction ? null : (
+                  <svg viewBox="0 0 100 1000">
+                    {
+                      cActions.map( ({ id, type, timediff, spacediff }, cai) => (
+                        <circle key={id+''+cai} r={4}
+                                cx={25 + spacediff} cy={30 + (timediff/5)}
+                                fill={CAfills[type]}
+                                stroke={CAstrokes[type]}
+                                strokeWidth={2}/>
+                      ) )
+                    }
+                  </svg>
+                )
+              }
             </div>
           )
         }
