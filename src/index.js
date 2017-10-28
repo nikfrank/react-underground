@@ -170,8 +170,8 @@ const timedAction = (sources = [], A) => ({
   ...A,
   timediff: !sources.length ? 0 : A.timestamp - sources[0].timestamp,
   spacediff: !sources.length ? 0 : (
-    A.timestamp - sources[sources.length-1].timestamp > 25
-  ) ? 0 : 5,
+    sources.filter( ({ timestamp }) => A.timestamp - timestamp < 45 ).length * 15
+  ),
 });
 
 const CAfills = {
@@ -205,6 +205,13 @@ export class UgLogger extends Component {
 
   setCurrentAction = (actionId)=>{
     this.setState({ currentAction: actionId });
+  }
+
+  displayAction = (Aid) => ()=>{
+    console.log(Aid);
+
+    const A = this.state.actions[this.state.currentAction].find(({ id }) => Aid === id);
+    console.log(A);
   }
   
   render(){
@@ -269,7 +276,9 @@ export class UgLogger extends Component {
                                 cx={25 + spacediff} cy={30 + (timediff/5)}
                                 fill={CAfills[type]}
                                 stroke={CAstrokes[type]}
-                                strokeWidth={2}/>
+                                strokeWidth={2}
+                                onClick={this.displayAction(id)}
+                        />
                       ) )
                     }
                   </svg>
