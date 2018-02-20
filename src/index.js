@@ -94,7 +94,7 @@ export default P=> class nuP extends Component {
             this.props.onDecays( a,
                                  this.state,
                                  causedDecays.map( d => d.name ),
-                                 effects );
+                                 effects, guid() );
           
           effects.forEach( this.dispatch );
         })
@@ -221,7 +221,7 @@ export class UgLogger extends Component {
                    (state.actions && Object.keys(state.actions)[0]),
   }) );
 
-  onDecays = (A, s, c, e)=>
+  onDecays = (A, s, c, e, g)=>
     this.setState(state => {
       const prev = state.actions[A.source].filter( ({ id })=> id === A.id)[0];
       
@@ -232,7 +232,7 @@ export class UgLogger extends Component {
             .concat( typedActions( timedAction(state.actions[A.source], {
               source: A.source, prev: A.id, nexts: e.map(e=> e.id),
               timestamp: prev.timestamp + 1, arity: A.arity + 0.5,
-              decays: c,
+              decays: c, id: g,
             }) ) )
             .sort((a, b)=>  a.timestamp - b.timestamp),
         },
@@ -245,8 +245,12 @@ export class UgLogger extends Component {
 
   displayAction = (Aid) => ()=>{
     console.log(Aid);
-
+    
     const A = this.state.actions[this.state.currentAction].find(({ id }) => Aid === id);
+    A.decays ? console.log(A.decays.join(' ')) : 'noop';
+    A.reducer ? console.log( A.reducer ) : 'noop';
+    A.hook ? console.log( A.hook ) : 'noop';
+    A.trigger ? console.log( A.trigger ) : 'noop';
     console.log(A);
   }
   
