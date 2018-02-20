@@ -78,6 +78,7 @@ export default P=> class nuP extends Component {
           // decays are done, setState to decay chain output
 
           // it suffices for now to say dev must enforce atomicity
+          // for such an ejemplo, see blackjack state.dealing atom
           
           const causedDecays =
             P.decays.filter( decay => decay.cause(this.state) );
@@ -166,9 +167,10 @@ export default P=> class nuP extends Component {
 const typedActions = (A, {
   hook, trigger, reducer, decays,
 } = A) => [
-  hook ? { ...A, type: 'hook'} : undefined,
+  (hook && reducer) ? { ...A, type: 'hookANDreducer' } : undefined,
+  hook && !reducer ? { ...A, type: 'hook'} : undefined,
   trigger ? { ...A, type: 'trigger'} : undefined,
-  reducer ? { ...A, type: 'reducer'} : undefined,
+  reducer && !hook ? { ...A, type: 'reducer'} : undefined,
   decays ? { ...A, type: 'decays'} : undefined,
 ].filter(i=>i);
 
@@ -176,7 +178,8 @@ const timedAction = (sources = [], A) => ({
   ...A,
   timediff: !sources.length ? 0 : A.timestamp - sources[0].timestamp,
   spacediff: !sources.length ? 0 : (
-    sources.filter( ({ timestamp }) => A.timestamp - timestamp < 45 ).length * 15
+    sources.filter( ({ timestamp }) => A.timestamp - timestamp < 25 ).length * 15
+    + 16 * Math.random() - 8
   ),
 });
 
@@ -185,6 +188,7 @@ const CAstrokes = {
   trigger: 'orange',
   reducer: 'blue',
   hook: 'green',
+  hookANDreducer: 'yellowgreen',
   decays: 'yellow',
 };
 
@@ -193,6 +197,7 @@ const CAfills = {
   trigger: '#fc7',
   reducer: '#77f',
   hook: '#4f4',
+  hookANDreducer: '#cfc',
   decays: '#ff4',
 };
 
@@ -217,18 +222,22 @@ export class UgLogger extends Component {
   }) );
 
   onDecays = (A, s, c, e)=>
-    this.setState(state => ({
-      ...state, actions: {
-        ...state.actions,
-        [A.source]: (state.actions[A.source] || [])
-          .concat( typedActions( timedAction(state.actions[A.source], {
-            source: A.source, prev: A.id, nexts: e.map(e=> e.id),
-            timestamp: A.timestamp + 1, arity: A.arity + 0.5,
-            decays: c,
-          }) ) )
-          .sort((a, b)=>  a.timestamp - b.timestamp),
-      },
-    }) )
+    this.setState(state => {
+      const prev = state.actions[A.source].filter( ({ id })=> id === A.id)[0];
+      
+      return ({
+        ...state, actions: {
+          ...state.actions,
+          [A.source]: (state.actions[A.source] || [])
+            .concat( typedActions( timedAction(state.actions[A.source], {
+              source: A.source, prev: A.id, nexts: e.map(e=> e.id),
+              timestamp: prev.timestamp + 1, arity: A.arity + 0.5,
+              decays: c,
+            }) ) )
+            .sort((a, b)=>  a.timestamp - b.timestamp),
+        },
+      });
+    })
 
   setCurrentAction = (actionId)=>{
     this.setState({ currentAction: actionId });
@@ -255,7 +264,6 @@ export class UgLogger extends Component {
     const cActions = this.state.actions[currentAction] || [];
     const cActionIndex = {};
     cActions.forEach( a => (cActionIndex[a.id] = a) );
-console.log(cActions);
     
     return (
       <div>
@@ -302,7 +310,7 @@ console.log(cActions);
                   <svg viewBox="0 0 200 1000">
                     {
                       cActions.map( ({
-                        id, type, timediff, spacediff, arity, prev, nexts,
+                        id, type, timediff, spacediff, arity, prev, nexts, sourceDecay,
                       }, cai) => [
                         <circle key={id+''+cai} r={4}
                                 cx={25 + spacediff} cy={30 + (arity * 20)}
@@ -312,7 +320,7 @@ console.log(cActions);
                                 onClick={this.displayAction(id)}
                         />,
 
-                        prev && (
+                        prev && !sourceDecay && (
                           <line x1={25 + spacediff} y1={30 + (arity * 20)}
                                 x2={cActionIndex[prev].spacediff + 25}
                                 y2={cActionIndex[prev].arity * 20 + 30}

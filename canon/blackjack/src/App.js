@@ -54,6 +54,11 @@ class App extends Component {
   static get reducers(){
     return {
       newHand: state=> App.initialState,
+
+      dealing: (state, { payload })=> ({
+        ...state,
+        dealing: payload,
+      }),
       
       setHandPhase: (state, { payload: { handIndex, phase } })=> ({
         ...state, pHands: state.pHands.map( (hand, hi)=>
@@ -63,7 +68,9 @@ class App extends Component {
 
       dealCard: (state, { payload: card, hand: hiDealing })=>
         state.pHands[hiDealing].phase !== 'deal' ? state : ({
-          ...state, pHands: state.pHands.map( (hand, hi)=>
+          ...state,
+          dealing: null,
+          pHands: state.pHands.map( (hand, hi)=>
             hi !== hiDealing ? hand : ({
               ...hand, cards: hand.cards.concat( card )
             })
@@ -107,9 +114,13 @@ class App extends Component {
     return [
       {
         cause: state=>
-          state.pHands.findIndex( hand => hand.cards.length < 2 ) > -1,
+          state.dealing === null && (
+            state.pHands.findIndex( hand => hand.cards.length < 2 ) > -1 ),
 
         effect: state=> ({
+          reducer: 'dealing',
+          payload: state.pHands.findIndex( hand => hand.cards.length < 2 ),
+
           hook: 'dealCard',
           then: {
             reducer: 'dealCard',
@@ -143,7 +154,7 @@ class App extends Component {
         ).length && doesDealerHit(state.cpCards),
 
         effect: state=> ({ trigger: 'cpPlay', payload: state.cpCards }),
-        name: 'dealer starts playing',
+        name: 'dealer plays',
       },
     ];
   }
@@ -157,6 +168,7 @@ class App extends Component {
           phase: 'deal'
         },
       ],
+      dealing: null,
     };
   }
 
